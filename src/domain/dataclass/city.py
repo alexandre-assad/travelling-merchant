@@ -1,7 +1,7 @@
 
 from dataclasses import dataclass
 
-@dataclass()
+@dataclass
 class City:
     name: str
     longitude: float
