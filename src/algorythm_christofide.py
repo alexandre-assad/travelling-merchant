@@ -112,6 +112,6 @@ city_coordinates = [(data.iloc[i]['Latitude'], data.iloc[i]['Longitude']) for i 
 folium.PolyLine(city_coordinates, color="blue", weight=2.5, opacity=1).add_to(map_france)
 
 # création de fichier HTML
-sortie_html = "C:/Users/bamiy/OneDrive/Documents/marchand/itineraire_france.html"
+sortie_html = ""
 map_france.save(sortie_html)
 print(f"La carte a été sauvegardée sous le nom '{sortie_html}'")
