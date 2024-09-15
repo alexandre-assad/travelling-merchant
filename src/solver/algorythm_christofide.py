@@ -5,6 +5,8 @@ import os
 from math import radians, sin, cos, sqrt, atan2
 from itertools import combinations
 
+
+
 #Haversine distance
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371.0  # Hearth radius
@@ -77,41 +79,41 @@ def calculer_distance_totale(itinerary, data):
         distance_totale += distance
     return distance_totale
 
-#matrice des distances
-distance_matrix = compute_distance_matrix(data)
+def algorythm_output(file_path: str, output_file: str) -> None:
+    data = pd.read_csv(file_path)
+    distance_matrix = compute_distance_matrix(data)
 
-#itinéraire avec l'algorithme de Christofides
-itinerary = christofides_tsp(data, distance_matrix)
+    #itinéraire avec l'algorithme de Christofides
+    itinerary = christofides_tsp(data, distance_matrix)
 
-#distance totale de l'itinéraire généré
-distance_totale = calculer_distance_totale(itinerary, data)
-print(f"Distance totale de l'itinéraire : {distance_totale:.2f} km")
+    #distance totale de l'itinéraire généré
+    distance_totale = calculer_distance_totale(itinerary, data)
+    print(f"Distance totale de l'itinéraire : {distance_totale:.2f} km")
 
-#centrer la carte sur la France (coordonnées approximatives)
-map_france = folium.Map(location=[46.603354, 1.888334], zoom_start=6)
+    #centrer la carte sur la France (coordonnées approximatives)
+    map_france = folium.Map(location=[46.603354, 1.888334], zoom_start=6)
 
-#les étapes de l'itinéraire dans la console et ajout des marqueurs sur la carte
-print("Étapes de l'itinéraire :")
-for i, city_idx in enumerate(itinerary):
-    city_name = data.iloc[city_idx]['Ville']
-    city_lat = data.iloc[city_idx]['Latitude']
-    city_lon = data.iloc[city_idx]['Longitude']
+    #les étapes de l'itinéraire dans la console et ajout des marqueurs sur la carte
+    print("Étapes de l'itinéraire :")
+    for i, city_idx in enumerate(itinerary):
+        city_name = data.iloc[city_idx]['Ville']
+        city_lat = data.iloc[city_idx]['Latitude']
+        city_lon = data.iloc[city_idx]['Longitude']
+        
     
-   
-    print(f"{i + 1} - {city_name}")
-    
-    #popup
-    folium.Marker(
-        [city_lat, city_lon],
-        popup=f"{i + 1} - {city_name}",
-        icon=folium.Icon(color="pink", icon="info-sign")
-    ).add_to(map_france)
+        print(f"{i + 1} - {city_name}")
+        
+        #popup
+        folium.Marker(
+            [city_lat, city_lon],
+            popup=f"{i + 1} - {city_name}",
+            icon=folium.Icon(color="pink", icon="info-sign")
+        ).add_to(map_france)
 
-# les lignes de l'itinéraire
-city_coordinates = [(data.iloc[i]['Latitude'], data.iloc[i]['Longitude']) for i in itinerary]
-folium.PolyLine(city_coordinates, color="blue", weight=2.5, opacity=1).add_to(map_france)
+    # les lignes de l'itinéraire
+    city_coordinates = [(data.iloc[i]['Latitude'], data.iloc[i]['Longitude']) for i in itinerary]
+    folium.PolyLine(city_coordinates, color="blue", weight=2.5, opacity=1).add_to(map_france)
 
-# création de fichier HTML
-sortie_html = ""
-map_france.save(sortie_html)
-print(f"La carte a été sauvegardée sous le nom '{sortie_html}'")
+    # création de fichier HTML
+    map_france.save(output_file)
+    print(f"La carte a été sauvegardée sous le nom '{output_file}'")

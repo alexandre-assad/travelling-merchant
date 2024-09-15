@@ -4,6 +4,8 @@ from pathlib import Path
 from random import choice, randint, shuffle
 from typing import Dict, List, Tuple, TypeAlias
 
+import folium
+
 from src.domain.dataclass.city import City
 from src.domain.dataclass.road import Road
 from src.domain.dataclass.travel import Travel
@@ -66,7 +68,7 @@ def _first_genetic_generation(cities: List[City], number_merchant: int) -> List[
     return sorted(travels, key= lambda x: x.total_distance, reverse=True)[:round(number_merchant/2)]
 
 
-def genetic_algorithm(file_path: str, generations: int = 500, number_merchant: int = 100, mutation_rate_percent: int = 5) -> List[Travel]:
+def genetic_algorithm(file_path: str, output_file: str, generations: int = 1000, number_merchant: int = 100, mutation_rate_percent: int = 5) -> List[Travel]:
     best_travels = []
     cities = parse_csv_to_list_city(file_path)
 
@@ -79,7 +81,33 @@ def genetic_algorithm(file_path: str, generations: int = 500, number_merchant: i
         half_best_travels = sorted(travels, key= lambda x: x.total_distance, reverse=True)[:round(number_merchant/2)]
         best_travels.append(half_best_travels[0])
 
-    print(best_travels[-1].total_distance)
+    best_travel = best_travels[-1]
+    map_france = folium.Map(location=[46.603354, 1.888334], zoom_start=6)
+
+    #les étapes de l'itinéraire dans la console et ajout des marqueurs sur la carte
+    print("Étapes de l'itinéraire :")
+    for index, road in best_travel.itineracy.items():
+        city = road.first_city
+
+        folium.Marker(
+            [city.latitude, city.longitude],
+            popup=f"{index + 1} - {city.name}",
+            icon=folium.Icon(color="pink", icon="info-sign")
+        ).add_to(map_france)
+    
+    city =  best_travel.itineracy[20].second_city
+    folium.Marker(
+        [city.latitude, city.longitude],
+        popup=f"{21} - {city.name}",
+        icon=folium.Icon(color="pink", icon="info-sign")
+    ).add_to(map_france)
+
+    # les lignes de l'itinéraire
+    city_coordinates = [(road.first_city.latitude, road.first_city.longitude) for road in best_travel.itineracy.values()] + [(best_travel.itineracy[20].second_city.latitude, best_travel.itineracy[20].second_city.longitude)]
+    folium.PolyLine(city_coordinates, color="blue", weight=2.5, opacity=1).add_to(map_france)
+
+    # création de fichier HTML
+    map_france.save(output_file)
     return best_travels
 
 
