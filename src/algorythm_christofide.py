@@ -5,11 +5,9 @@ import os
 from math import radians, sin, cos, sqrt, atan2
 from itertools import combinations
 
-data = pd.read_csv("C:/Users/bamiy/OneDrive/Documents/marchand/villes.csv")
-
-#la distance de Haversine 
+#Haversine distance
 def haversine(lat1, lon1, lat2, lon2):
-    R = 6371.0  # Rayon de la Terre en kilomètres
+    R = 6371.0  # Hearth radius
     dlat = radians(lat2 - lat1)
     dlon = radians(lon2 - lon1)
     a = sin(dlat / 2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2)**2
@@ -17,7 +15,7 @@ def haversine(lat1, lon1, lat2, lon2):
     distance = R * c
     return distance
 
-#la matrice des distances entre les villes
+#matrix of Cities distance
 def compute_distance_matrix(data):
     num_villes = len(data)
     distance_matrix = {}
@@ -29,7 +27,7 @@ def compute_distance_matrix(data):
         distance_matrix[(j, i)] = distance
     return distance_matrix
 
-#algorithme de Christofides
+#Christofides algorytm
 def christofides_tsp(data, distance_matrix):
     G = nx.Graph()
 
