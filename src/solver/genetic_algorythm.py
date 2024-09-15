@@ -9,38 +9,29 @@ from src.domain.dataclass.road import Road
 from src.domain.dataclass.travel import Travel
 from src.parser.csv_parser import parse_csv_to_list_city
 
-def _generate_travel_from_parent(parent_travels: List[Travel], start_city: City) -> Dict[int, Road]:
-    final_travel = {}
-    all_cities = [road.first_city for road in parent_travels[0].itinerary.values()]
-    all_cities.remove(start_city)
+def _generate_travel_from_parent(first_travel: Travel, second_travel: Travel) -> Dict[int, Road]:
+    intineracy = {}
+    random_treshold = randint(8,14)
+    all_cities = set(first_travel.itineray_cities)
+
+    parents_set_cities = set(first_travel.itineray_cities[:random_treshold] + second_travel.itineray_cities[random_treshold:]) 
+    visited_cities = set(parents_set_cities)
+    cities_left = list(all_cities - visited_cities)
+    shuffle(cities_left)
+    parents_set_cities = list(parents_set_cities) + cities_left
+
+    current_city = parents_set_cities[0]
+    parents_set_cities = parents_set_cities[1:]
+    for index, city in enumerate(parents_set_cities):
+        intineracy[index] = Road(current_city, city)
+        current_city = city
+
+    return intineracy
     
-    road_index = 0
-    while len(all_cities) > 0:
-        parent_roads = []
-        for travel in parent_travels:
-            for road in travel.itinerary.values():
-                if road.first_city == start_city and road.second_city in all_cities:
-                    parent_roads.append(road) 
-        if len(parent_roads) < 1:
-            random_city = choice(all_cities)
-            final_travel[road_index] = Road(start_city, random_city)
-            start_city = random_city
-            all_cities.remove(start_city)
-        else:
-            parent_roads = sorted(parent_roads, key=lambda x: x.distance)
-            final_travel[road_index] = parent_roads[0]
-            start_city = parent_roads[0].second_city
-            all_cities.remove(start_city)
-        road_index += 1
-    return final_travel
-  
-
-
 def _generate_two_travel(parent_travels: List[Travel]) ->  List[Travel]:
     final_travels = []
-    for travel in parent_travels:
-        start_city = travel.itinerary[0].first_city
-        final_travels.append(Travel(_generate_travel_from_parent(parent_travels, start_city)))
+    final_travels.append(Travel(_generate_travel_from_parent(parent_travels[0], parent_travels[1])))
+    final_travels.append(Travel(_generate_travel_from_parent(parent_travels[1], parent_travels[0])))
     return final_travels
 
 
@@ -82,13 +73,13 @@ def genetic_algorithm(file_path: str, generations: int = 500, number_merchant: i
     half_best_travels = _first_genetic_generation(cities.copy(), number_merchant)
     best_travels.append(half_best_travels[0])
 
-    for generation in range(1, generations):
-        print(generation)
+    for _ in range(1, generations):
         travels = _find_new_mixed_travels(half_best_travels)
         # travels = genetic_mutation(travels, mutation_rate_percent)
         half_best_travels = sorted(travels, key= lambda x: x.total_distance, reverse=True)[:round(number_merchant/2)]
         best_travels.append(half_best_travels[0])
 
+    print(best_travels[-1].total_distance)
     return best_travels
 
 

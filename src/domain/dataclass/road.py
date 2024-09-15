@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from functools import cached_property
 from math import atan2, cos, pi, sin, sqrt
 
 from src.domain.dataclass.city import City
@@ -11,7 +12,7 @@ class Road:
     first_city: City
     second_city: City
 
-    @property
+    @cached_property
     def distance(self) -> float:
         earth_radius = 6371
         latitude_degree = degree_to_radius(self.second_city.latitude - self.first_city.latitude) 
