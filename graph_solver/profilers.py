@@ -1,9 +1,12 @@
-from time import perf_counter
 from functools import wraps
+from time import perf_counter
 from typing import Any
-#No stubs
-from memory_profiler import memory_usage #type: ignore
+
 from loguru import logger
+
+# No stubs
+from memory_profiler import memory_usage  # type: ignore
+
 
 def profile(func: Any) -> Any:
     @wraps(func)

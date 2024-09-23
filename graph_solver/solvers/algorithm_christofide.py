@@ -41,7 +41,9 @@ def _compute_distance_matrix(data: DataFrame) -> dict[tuple[int, int], float]:
     return distance_matrix
 
 
-def _christofides_tsp(distance_matrix: dict[tuple[int, int], float]) -> list[tuple[int,int]]:
+def _christofides_tsp(
+    distance_matrix: dict[tuple[int, int], float]
+) -> list[tuple[int, int]]:
     graph = Graph()
     for (i, j), dist in distance_matrix.items():
         graph.add_edge(i, j, weight=dist)
@@ -62,7 +64,9 @@ def _christofides_tsp(distance_matrix: dict[tuple[int, int], float]) -> list[tup
     return hamiltonian_path
 
 
-def _create_travel_from_indexes(indexes: list[tuple[int,int]], cities_data: DataFrame) -> Travel:
+def _create_travel_from_indexes(
+    indexes: list[tuple[int, int]], cities_data: DataFrame
+) -> Travel:
     iteneracy = []
     for index_tuple in indexes:
         _, city_idx = index_tuple
@@ -73,6 +77,7 @@ def _create_travel_from_indexes(indexes: list[tuple[int,int]], cities_data: Data
         iteneracy.append(city)
     travel = create_travel(iteneracy)
     return travel
+
 
 @profile
 def christofide_algorithm(cities_data: DataFrame) -> Travel:

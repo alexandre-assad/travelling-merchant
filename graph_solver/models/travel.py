@@ -20,6 +20,7 @@ class Travel:
     def as_list(self) -> list[City]:
         return [road.first_city for road in self.itineracy.values()]
 
+
 def create_travel(cities: list[City]) -> Travel:
     itineracy: Itineracy = {}
     index = 0

@@ -86,6 +86,7 @@ def _df_to_cities(cities_data: DataFrame) -> list[City]:
         )
     return cities
 
+
 @profile
 def genetic_algorithm(
     cities_data: DataFrame,
