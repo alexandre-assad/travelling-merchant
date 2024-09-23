@@ -11,25 +11,15 @@ from graph_solver.solve import main as solve_graph
 from graph_solver.solvers import christofide_algorithm, genetic_algorithm
 
 
-def run_gen_algo() -> None:
-    input_path = Path("data/france_cities.csv")
-    tmp_path = Path("outs/")
-    html_output_path = tmp_path / "gen_algo.html"
-    if not tmp_path.exists():
-        mkdir(tmp_path)
-    algo_gen = partial(genetic_algorithm, generations = 1000, number_merchant=10)
-    solve_graph(input_path, html_output_path, algo_gen)
-    system(f"chromium {html_output_path}")
-
 
 def run_gen_algo_batch(save_path: Path) -> None:
     input_path = Path("data/france_cities.csv")
-    tmp_path = Path("outs/")
+    tmp_path = Path("tmp/")
     if not tmp_path.exists():
         mkdir(tmp_path)
 
     generations_range = range(10, 1001, 10)
-    merchants_range = [5, 10, 50, 100]
+    merchants_range = [5, 10, 25, 50, 75, 100]
     results = []
 
     for merchants in merchants_range:
@@ -84,19 +74,29 @@ def generate_plot_from_df(results: DataFrame) -> None:
     plt.close()
 
 def save_algo_gen() -> None:
-    tmp_path = Path("outs/")
+    tmp_path = Path("tmp/")
     if not tmp_path.exists():
         mkdir(tmp_path)
     res_path = tmp_path / "results.csv"
-    run_gen_algo_batch(res_path)
+    # run_gen_algo_batch(res_path)
     results = read_csv(res_path, index_col=None)
     generate_plot_from_df(results)
 
 
+def run_gen_algo() -> None:
+    input_path = Path("data/france_cities.csv")
+    tmp_path = Path("tmp/")
+    html_output_path = tmp_path / "gen_algo.html"
+    if not tmp_path.exists():
+        mkdir(tmp_path)
+    algo_gen = partial(genetic_algorithm, generations = 500, number_merchant=5)
+    solve_graph(input_path, html_output_path, algo_gen)
+    system(f"chromium {html_output_path}")
+
 
 def run_christofide() -> None:
     input_path = Path("data/france_cities.csv")
-    tmp_path = Path("outs/")
+    tmp_path = Path("tmp/")
     if not tmp_path.exists():
         mkdir(tmp_path)
     christofide_path = tmp_path / "chris_out.html"
@@ -106,5 +106,5 @@ def run_christofide() -> None:
 
 if __name__ == "__main__":
     # save_algo_gen()
-    run_christofide()
+    # run_christofide()
     run_gen_algo()
